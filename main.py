@@ -1,44 +1,39 @@
 import mysql.connector
 from faker import Faker
 import time
+from utils.func import select_rows_count
 
-# Создаем экземпляр Faker для генерации случайных данных
+# Экземпляр класса для работы с методами генерации рандомных данных 
 fake = Faker()
 
-def select_rows_count(cnx):
-    cursor = cnx.cursor()
-    query = "SELECT COUNT(*) FROM test_table"
-    cursor.execute(query)
-    result = cursor.fetchone()[0]
-    return int(result)
 
-# Функция для вставки одной записи
-def insert_one_record(id, cnx):
+# Подготовка одной записи
+def insert_record(id, connection):
     # Создаем курсор
-    cursor = cnx.cursor()
+    cursor = connection.cursor()
     text = fake.text(max_nb_chars=200)
     date = time.strftime('%Y-%m-%d %H:%M:%S')
-    query = "INSERT INTO test_table (id, test_text, date) VALUES (%s, %s, %s)"
-    cursor.execute(query, (id, text, date))
+    query = "INSERT INTO test_table (test_text, date) VALUES (%s, %s)"
+    cursor.execute(query, (text, date))
 
-# Генерация и вставка 10 миллионов записей
-def insert_all_records(cnx, rows_):
+
+# Вставить заданное количество строк 
+def insert_all_records(connection, rows_):
     for i in range(1, rows_+1):
-        start_time = time.time()
-        insert_one_record(i, cnx)
-        # После каждых 10000 записей делаем коммит, чтобы освободить память
+        insert_record(i, connection)
         if i % 10000 == 0:
-            cnx.commit()
-            print(f"Committed after {time.time() - start_time} seconds")
+            connection.commit()
+            print(f"Committed {i} rows")
 
-def main(cnx):
+
+def main(connection):
     rows_number = 10_000_000
-    rows_ = rows_number - select_rows_count(cnx)
-    insert_all_records(cnx, rows_)
+    rows_ = rows_number - select_rows_count(connection)
+    insert_all_records(connection, rows_)
+
 
 if __name__ == '__main__':
-    cnx = mysql.connector.connect(user='root', password='1234',
-                              host='localhost',
-                              database='test')
-    main(cnx)
-    cnx.close()
+    connection = mysql.connector.connect(user='root', password='1234',
+                                         host='localhost',database='test')
+    main(connection)
+    connection.close()
