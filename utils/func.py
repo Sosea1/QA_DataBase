@@ -40,7 +40,7 @@ def drop_index(connection):
 def select_all(connection):
     cursor = connection.cursor()
     query = "SELECT * FROM test_table WHERE test_text LIKE %s"
-    pattern = '%live%'
+    pattern = 'Already%'
     cursor.execute(query, (pattern,))
     rows = cursor.fetchall()
     return rows
