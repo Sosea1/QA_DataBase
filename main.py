@@ -1,7 +1,7 @@
 import mysql.connector
 from faker import Faker
 import time
-from utils.func import select_rows_count
+from utils.func import create_table, select_rows_count
 
 # Экземпляр класса для работы с методами генерации рандомных данных 
 fake = Faker()
@@ -27,6 +27,7 @@ def insert_all_records(connection, rows_):
 
 
 def main(connection):
+    create_table(connection)
     rows_number = 10_000_000
     rows_ = rows_number - select_rows_count(connection)
     insert_all_records(connection, rows_)

@@ -1,10 +1,10 @@
 # Создание тестовой таблицы
 def create_table(connection):
     cursor = connection.cursor()
-    query = """CREATE TABLE IF NOT EXISTS ttable (
+    query = """CREATE TABLE IF NOT EXISTS test_table (
     id int NOT NULL AUTO_INCREMENT,
-    date date NOT NULL,
-    str varchar(255) NOT NULL,
+    test_text varchar(255) DEFAULT NULL,
+    date datetime DEFAULT NULL,
     PRIMARY KEY (id)
     )"""
     cursor.execute(query)
